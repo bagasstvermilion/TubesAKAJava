@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package com.mycompany.tubesakajava;
 import javax.swing.table.DefaultTableModel;
 import java.sql.ResultSet;
@@ -116,4 +117,87 @@ public class IterativeGameSearch {
     public static long getExecutionTime() {
         return executionTime;
     }
+=======
+package com.mycompany.tubesakajava;
+import javax.swing.table.DefaultTableModel;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
+
+public class IterativeGameSearch {
+    private static long executionTime = 0;
+    
+    public static DefaultTableModel searchGamesByRating(float targetRating) {
+        long startTime = System.nanoTime();
+        List<DatabaseHelper.GameData> games = DatabaseHelper.getGameData();
+        DefaultTableModel model = new DefaultTableModel();
+        
+        try {
+            model.addColumn("Nama Game");
+            model.addColumn("Rating Game");
+            model.addColumn("Developer Game");
+            model.addColumn("Tahun Rilis");
+            
+            if (games.isEmpty()) {
+                return createEmptyModel("No data found");
+            }
+            
+            if (targetRating <= 0) {
+                for (DatabaseHelper.GameData game : games) {
+                    model.addRow(new Object[]{
+                        game.name,
+                        game.rating,
+                        game.developer,
+                        game.year
+                    });
+                }
+                return model;
+            }
+            
+            List<DatabaseHelper.GameData> matchingGames = new ArrayList<>();
+            for (DatabaseHelper.GameData game : games) {
+                if (game.rating >= targetRating) {
+                    matchingGames.add(game);
+                }
+            }
+            
+            if (matchingGames.isEmpty()) {
+                return createEmptyModel("No games found with rating >= " + targetRating);
+            }
+            
+            Collections.sort(matchingGames, (g1, g2) -> Float.compare(g2.rating, g1.rating));
+            
+            for (DatabaseHelper.GameData game : matchingGames) {
+                model.addRow(new Object[]{
+                    game.name,
+                    game.rating,
+                    game.developer,
+                    game.year
+                });
+            }
+            
+            executionTime = (System.nanoTime() - startTime) / 1_000_000;
+            System.out.println("Iterative execution time: " + executionTime + " ms");
+            
+            return model;
+            
+        } catch (Exception e) {
+            System.out.println("Error in iterative search: " + e.getMessage());
+            e.printStackTrace();
+            return createEmptyModel("Error: " + e.getMessage());
+        }
+    }
+    
+    private static DefaultTableModel createEmptyModel(String message) {
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("Result");
+        model.addRow(new Object[]{message});
+        return model;
+    }
+    
+    public static long getExecutionTime() {
+        return executionTime;
+    }
+>>>>>>> 6dae274 (sql)
 }

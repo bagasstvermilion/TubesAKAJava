@@ -29,6 +29,14 @@
         <scope>system</scope>
         <systemPath>${basedir}/src/lib/mssql-jdbc_auth-12.8.1.x64.dll</systemPath>
     </dependency>
+<<<<<<< HEAD
+=======
+    <dependency>
+        <groupId>org.jfree</groupId>
+        <artifactId>jfreechart</artifactId>
+        <version>1.5.3</version>
+    </dependency>
+>>>>>>> 6dae274 (sql)
 </dependencies>
 
 
