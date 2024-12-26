@@ -9,7 +9,7 @@ import java.util.List;
 public class DatabaseHelper {
     private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=GameSet;integratedSecurity=true;encrypt=false;trustServerCertificate=true";
     private static final String DRIVER_CLASS = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    private static int dataLimit = -1; // Default -1 means no limit
+    private static int dataLimit = -1;
 
     public static class GameData {
         public String name;

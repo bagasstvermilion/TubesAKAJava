@@ -31,16 +31,13 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout());
 
-        // Inisialisasi dataset dan history
         dataset = new DefaultCategoryDataset();
         iterativeHistory = new ArrayList<>();
         recursiveHistory = new ArrayList<>();
 
-        // Komponen GUI utama
         setupTopPanel();
         setupTable();
 
-        // Load data awal
         loadInitialData();
     }
 
@@ -49,7 +46,6 @@ public class MainFrame extends JFrame {
     topPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     GridBagConstraints gbc = new GridBagConstraints();
 
-    // Title
     JLabel titleLabel = new JLabel("Analisis Performa Pencarian Game");
     titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
     gbc.gridx = 0;
@@ -58,7 +54,6 @@ public class MainFrame extends JFrame {
     gbc.insets = new Insets(0, 0, 20, 0);
     topPanel.add(titleLabel, gbc);
 
-    // Button Panel
     JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
     JButton iterativeButton = createStyledButton("Cari (Iteratif)");
     JButton recursiveButton = createStyledButton("Cari (Rekursif)");
@@ -75,31 +70,26 @@ public class MainFrame extends JFrame {
     buttonPanel.add(refreshButton);
     buttonPanel.add(showChartButton);
 
-    // Add data limit controls
     setupDataLimitControls(buttonPanel);
 
     gbc.gridy = 1;
     gbc.insets = new Insets(0, 0, 10, 0);
     topPanel.add(buttonPanel, gbc);
 
-    // Time Panel with better spacing
     JPanel timePanel = new JPanel(new GridBagLayout());
     GridBagConstraints timeGbc = new GridBagConstraints();
     timeGbc.insets = new Insets(5, 20, 5, 20);
-    
-    // Iterative Time Label
+
     iterativeTimeLabel = createStyledTimeLabel("Waktu Iteratif (rata-rata): - ns");
     timeGbc.gridx = 0;
     timeGbc.gridy = 0;
     timeGbc.anchor = GridBagConstraints.WEST;
     timePanel.add(iterativeTimeLabel, timeGbc);
-    
-    // Recursive Time Label
+
     recursiveTimeLabel = createStyledTimeLabel("Waktu Rekursif (rata-rata): - ns");
     timeGbc.gridx = 1;
     timePanel.add(recursiveTimeLabel, timeGbc);
-    
-    // Data Count Label
+
     dataCountLabel = createStyledTimeLabel("Jumlah Data: 0");
     timeGbc.gridx = 2;
     timePanel.add(dataCountLabel, timeGbc);
@@ -253,7 +243,6 @@ private void handleRecursiveSearch() {
     }
 
     private void updateDataCount() {
-    // Ubah dari menggunakan table model ke menggunakan DatabaseHelper langsung
     int rowCount = DatabaseHelper.getGameData().size();
     dataCountLabel.setText("Jumlah Data: " + rowCount);
 }
