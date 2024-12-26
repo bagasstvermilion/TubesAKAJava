@@ -1,212 +1,3 @@
-<<<<<<< HEAD
-package com.mycompany.tubesakajava;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-
-public class MainFrame extends JFrame {
-    private JTable table;
-    private JLabel iterativeTimeLabel;
-    private JLabel recursiveTimeLabel;
-
-    public MainFrame() {
-        setTitle("Data Game");
-        setBounds(100, 100, 1000, 700);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        getContentPane().setLayout(new BorderLayout());
-
-        JPanel topPanel = new JPanel(new GridBagLayout());
-        topPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));  // Add padding
-        GridBagConstraints gbc = new GridBagConstraints();
-
-        JButton iterativeButton = createStyledButton("Cari (Iteratif)");
-        JButton recursiveButton = createStyledButton("Cari (Rekursif)");
-        JButton refreshButton = createStyledButton("Refresh Data");
-
-        JLabel titleLabel = new JLabel("Analisis Performa Pencarian Game");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.insets = new Insets(0, 0, 20, 0);
-        topPanel.add(titleLabel, gbc);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        buttonPanel.add(iterativeButton);
-        buttonPanel.add(recursiveButton);
-        buttonPanel.add(refreshButton);
-        
-        gbc.gridy = 1;
-        gbc.insets = new Insets(0, 0, 20, 0);
-        topPanel.add(buttonPanel, gbc);
-
-        JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 0));
-        timePanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-
-        iterativeTimeLabel = createStyledTimeLabel("Waktu Iteratif: - ms");
-        recursiveTimeLabel = createStyledTimeLabel("Waktu Rekursif: - ms");
-        
-        timePanel.add(iterativeTimeLabel);
-        timePanel.add(recursiveTimeLabel);
-
-        gbc.gridy = 2;
-        topPanel.add(timePanel, gbc);
-
-        getContentPane().add(topPanel, BorderLayout.NORTH);
-
-        table = new JTable();
-        table.setFont(new Font("Arial", Font.PLAIN, 14));
-        table.setRowHeight(25);
-        DefaultTableModel initialModel = new DefaultTableModel();
-        initialModel.addColumn("Nama Game");
-        initialModel.addColumn("Rating Game");
-        initialModel.addColumn("Developer Game");
-        initialModel.addColumn("Tahun Rilis");
-        table.setModel(initialModel);
-
-        JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
-        getContentPane().add(scrollPane, BorderLayout.CENTER);
-
-        iterativeButton.addActionListener(e -> {
-            try {
-                String input = JOptionPane.showInputDialog(this, 
-                    "Masukkan minimum rating:",
-                    "Input Rating",
-                    JOptionPane.QUESTION_MESSAGE);
-                
-                if (input != null && !input.trim().isEmpty()) {
-                    float minRating = Float.parseFloat(input);
-                    DefaultTableModel model = IterativeGameSearch.searchGamesByRating(minRating);
-                    
-                    if (model != null && model.getRowCount() > 0) {
-                        table.setModel(model);
-                        iterativeTimeLabel.setText("Waktu Iteratif: " + IterativeGameSearch.getExecutionTime() + " ms");
-                        System.out.println("Table updated with " + model.getRowCount() + " rows");
-                    } else {
-                        JOptionPane.showMessageDialog(this,
-                            "Tidak ada data yang ditemukan untuk rating >= " + minRating,
-                            "Tidak Ada Data",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    }
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this,
-                    "Masukkan rating yang valid (angka)",
-                    "Error Input",
-                    JOptionPane.ERROR_MESSAGE);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this,
-                    "Error: " + ex.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
-            }
-        });
-
-        recursiveButton.addActionListener(e -> {
-            try {
-                String input = JOptionPane.showInputDialog(this,
-                    "Masukkan minimum rating:",
-                    "Input Rating",
-                    JOptionPane.QUESTION_MESSAGE);
-                
-                if (input != null && !input.trim().isEmpty()) {
-                    float minRating = Float.parseFloat(input);
-                    DefaultTableModel model = RecursiveGameSearch.searchGamesByRating(minRating);
-                    
-                    if (model != null && model.getRowCount() > 0) {
-                        table.setModel(model);
-                        recursiveTimeLabel.setText("Waktu Rekursif: " + RecursiveGameSearch.getExecutionTime() + " ms");
-                        System.out.println("Table updated with " + model.getRowCount() + " rows");
-                    } else {
-                        JOptionPane.showMessageDialog(this,
-                            "Tidak ada data yang ditemukan untuk rating >= " + minRating,
-                            "Tidak Ada Data",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    }
-                }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this,
-                    "Masukkan rating yang valid (angka)",
-                    "Error Input",
-                    JOptionPane.ERROR_MESSAGE);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this,
-                    "Error: " + ex.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
-            }
-        });
-
-        refreshButton.addActionListener(e -> {
-            try {
-                DefaultTableModel model = IterativeGameSearch.searchGamesByRating(0); // Get all games
-                if (model != null) {
-                    table.setModel(model);
-                    System.out.println("Table refreshed with " + model.getRowCount() + " rows");
-                }
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this,
-                    "Error refreshing data: " + ex.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
-            }
-        });
-
-        try {
-            DefaultTableModel model = IterativeGameSearch.searchGamesByRating(0);
-            if (model != null) {
-                table.setModel(model);
-                System.out.println("Initial data loaded with " + model.getRowCount() + " rows");
-            }
-        } catch (Exception e) {
-            System.out.println("Error loading initial data: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    private JButton createStyledButton(String text) {
-        JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setPreferredSize(new Dimension(150, 40));
-        return button;
-    }
-
-    private JLabel createStyledTimeLabel(String text) {
-        JLabel label = new JLabel(text);
-        label.setFont(new Font("Arial", Font.BOLD, 18));
-        label.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.GRAY, 2),
-            BorderFactory.createEmptyBorder(10, 20, 10, 20)
-        ));
-        label.setOpaque(true);
-        label.setBackground(Color.WHITE);
-        return label;
-    }
-
-    public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        SwingUtilities.invokeLater(() -> {
-            try {
-                MainFrame frame = new MainFrame();
-                frame.setVisible(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
-}
-=======
 package com.mycompany.tubesakajava;
 
 import org.jfree.chart.ChartFactory;
@@ -216,6 +7,8 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.category.CategoryDataset;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -230,6 +23,7 @@ public class MainFrame extends JFrame {
     private DefaultCategoryDataset dataset;
     private List<Long> iterativeHistory;
     private List<Long> recursiveHistory;
+    private JLabel dataCountLabel;
 
     public MainFrame() {
         setTitle("Data Game");
@@ -251,53 +45,103 @@ public class MainFrame extends JFrame {
     }
 
     private void setupTopPanel() {
-        JPanel topPanel = new JPanel(new GridBagLayout());
-        topPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        GridBagConstraints gbc = new GridBagConstraints();
+    JPanel topPanel = new JPanel(new GridBagLayout());
+    topPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+    GridBagConstraints gbc = new GridBagConstraints();
 
-        JLabel titleLabel = new JLabel("Analisis Performa Pencarian Game");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.insets = new Insets(0, 0, 20, 0);
-        topPanel.add(titleLabel, gbc);
+    // Title
+    JLabel titleLabel = new JLabel("Analisis Performa Pencarian Game");
+    titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.gridwidth = GridBagConstraints.REMAINDER;
+    gbc.insets = new Insets(0, 0, 20, 0);
+    topPanel.add(titleLabel, gbc);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        JButton iterativeButton = createStyledButton("Cari (Iteratif)");
-        JButton recursiveButton = createStyledButton("Cari (Rekursif)");
-        JButton refreshButton = createStyledButton("Refresh Data");
-        JButton showChartButton = createStyledButton("Tampilkan Grafik");
+    // Button Panel
+    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+    JButton iterativeButton = createStyledButton("Cari (Iteratif)");
+    JButton recursiveButton = createStyledButton("Cari (Rekursif)");
+    JButton refreshButton = createStyledButton("Refresh Data");
+    JButton showChartButton = createStyledButton("Tampilkan Grafik");
 
-        iterativeButton.addActionListener(e -> handleIterativeSearch());
-        recursiveButton.addActionListener(e -> handleRecursiveSearch());
-        refreshButton.addActionListener(e -> handleRefresh());
-        showChartButton.addActionListener(e -> {
-            updateDataset();
-            showChartInNewWindow();
+    iterativeButton.addActionListener(e -> handleIterativeSearch());
+    recursiveButton.addActionListener(e -> handleRecursiveSearch());
+    refreshButton.addActionListener(e -> handleRefresh());
+    showChartButton.addActionListener(e -> showChartInNewWindow());
+
+    buttonPanel.add(iterativeButton);
+    buttonPanel.add(recursiveButton);
+    buttonPanel.add(refreshButton);
+    buttonPanel.add(showChartButton);
+
+    // Add data limit controls
+    setupDataLimitControls(buttonPanel);
+
+    gbc.gridy = 1;
+    gbc.insets = new Insets(0, 0, 10, 0);
+    topPanel.add(buttonPanel, gbc);
+
+    // Time Panel with better spacing
+    JPanel timePanel = new JPanel(new GridBagLayout());
+    GridBagConstraints timeGbc = new GridBagConstraints();
+    timeGbc.insets = new Insets(5, 20, 5, 20);
+    
+    // Iterative Time Label
+    iterativeTimeLabel = createStyledTimeLabel("Waktu Iteratif (rata-rata): - ns");
+    timeGbc.gridx = 0;
+    timeGbc.gridy = 0;
+    timeGbc.anchor = GridBagConstraints.WEST;
+    timePanel.add(iterativeTimeLabel, timeGbc);
+    
+    // Recursive Time Label
+    recursiveTimeLabel = createStyledTimeLabel("Waktu Rekursif (rata-rata): - ns");
+    timeGbc.gridx = 1;
+    timePanel.add(recursiveTimeLabel, timeGbc);
+    
+    // Data Count Label
+    dataCountLabel = createStyledTimeLabel("Jumlah Data: 0");
+    timeGbc.gridx = 2;
+    timePanel.add(dataCountLabel, timeGbc);
+
+    gbc.gridy = 2;
+    gbc.insets = new Insets(10, 0, 10, 0);
+    topPanel.add(timePanel, gbc);
+
+    getContentPane().add(topPanel, BorderLayout.NORTH);
+}
+
+
+    private void setupDataLimitControls(JPanel buttonPanel) {
+        String[] limitOptions = {"All Data", "10 Records", "100 Records", "1000 Records", "5000 Records"};
+        JComboBox<String> dataLimitCombo = new JComboBox<>(limitOptions);
+        dataLimitCombo.setFont(new Font("Arial", Font.BOLD, 14));
+        
+        dataLimitCombo.addActionListener(e -> {
+            String selected = (String) dataLimitCombo.getSelectedItem();
+            int limit;
+            switch (selected) {
+                case "10 Records":
+                    limit = 10;
+                    break;
+                case "100 Records":
+                    limit = 100;
+                    break;
+                case "1000 Records":
+                    limit = 1000;
+                    break;
+                case "5000 Records":
+                    limit = 5000;
+                    break;
+                default:
+                    limit = -1; // No limit
+                    break;
+            }
+            DatabaseHelper.setDataLimit(limit);
+            handleRefresh();
         });
-
-        buttonPanel.add(iterativeButton);
-        buttonPanel.add(recursiveButton);
-        buttonPanel.add(refreshButton);
-        buttonPanel.add(showChartButton);
-
-        gbc.gridy = 1;
-        topPanel.add(buttonPanel, gbc);
-
-        JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 0));
-        timePanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-
-        iterativeTimeLabel = createStyledTimeLabel("Waktu Iteratif: - ms");
-        recursiveTimeLabel = createStyledTimeLabel("Waktu Rekursif: - ms");
-
-        timePanel.add(iterativeTimeLabel);
-        timePanel.add(recursiveTimeLabel);
-
-        gbc.gridy = 2;
-        topPanel.add(timePanel, gbc);
-
-        getContentPane().add(topPanel, BorderLayout.NORTH);
+        
+        buttonPanel.add(dataLimitCombo);
     }
 
     private void setupTable() {
@@ -321,48 +165,76 @@ public class MainFrame extends JFrame {
     }
 
     private void handleIterativeSearch() {
-        String input = JOptionPane.showInputDialog(this, "Masukkan minimal rating (contoh: 4.0):", "Minimal Rating", JOptionPane.QUESTION_MESSAGE);
-        if (input != null && !input.trim().isEmpty()) {
-            try {
-                float minRating = Float.parseFloat(input);
-                long startTime = System.currentTimeMillis();
+    String input = JOptionPane.showInputDialog(this, "Masukkan minimum rating:", "Input Rating", JOptionPane.QUESTION_MESSAGE);
+    if (input != null && !input.trim().isEmpty()) {
+        try {
+            float minRating = Float.parseFloat(input);
+
+            iterativeHistory.clear();
+            int repeatCount = 10;
+
+            for (int i = 0; i < repeatCount; i++) {
+                long startTime = System.nanoTime();
                 DefaultTableModel model = IterativeGameSearch.searchGamesByRating(minRating);
-                long endTime = System.currentTimeMillis();
+                long endTime = System.nanoTime();
 
-                if (model != null) {
+                long executionTime = (endTime - startTime); // Remove division by 1_000_000
+                iterativeHistory.add(executionTime);
+
+                if (i == repeatCount - 1 && model != null) {
                     table.setModel(model);
+                    updateDataCount();
                 }
-
-                iterativeHistory.add(endTime - startTime);
-                iterativeTimeLabel.setText("Waktu Iteratif: " + (endTime - startTime) + " ms");
-
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Masukkan rating yang valid!", "Error", JOptionPane.ERROR_MESSAGE);
             }
+
+            long averageTime = iterativeHistory.stream().mapToLong(Long::longValue).sum() / repeatCount;
+            iterativeTimeLabel.setText("Waktu Iteratif (rata-rata): " + averageTime + " ns");
+
+            updateDataset();
+
+            JOptionPane.showMessageDialog(this, "Pencarian Iteratif selesai sebanyak " + repeatCount + " kali!", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Masukkan rating valid!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+}
 
-    private void handleRecursiveSearch() {
-        String input = JOptionPane.showInputDialog(this, "Masukkan minimal rating (contoh: 4.0):", "Minimal Rating", JOptionPane.QUESTION_MESSAGE);
-        if (input != null && !input.trim().isEmpty()) {
-            try {
-                float minRating = Float.parseFloat(input);
-                long startTime = System.currentTimeMillis();
+private void handleRecursiveSearch() {
+    String input = JOptionPane.showInputDialog(this, "Masukkan minimum rating:", "Input Rating", JOptionPane.QUESTION_MESSAGE);
+    if (input != null && !input.trim().isEmpty()) {
+        try {
+            float minRating = Float.parseFloat(input);
+
+            recursiveHistory.clear();
+            int repeatCount = 10;
+
+            for (int i = 0; i < repeatCount; i++) {
+                long startTime = System.nanoTime();
                 DefaultTableModel model = RecursiveGameSearch.searchGamesByRating(minRating);
-                long endTime = System.currentTimeMillis();
+                long endTime = System.nanoTime();
 
-                if (model != null) {
+                long executionTime = (endTime - startTime); // Remove division by 1_000_000
+                recursiveHistory.add(executionTime);
+
+                if (i == repeatCount - 1 && model != null) {
                     table.setModel(model);
+                    updateDataCount();
                 }
-
-                recursiveHistory.add(endTime - startTime);
-                recursiveTimeLabel.setText("Waktu Rekursif: " + (endTime - startTime) + " ms");
-
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Masukkan rating yang valid!", "Error", JOptionPane.ERROR_MESSAGE);
             }
+
+            long averageTime = recursiveHistory.stream().mapToLong(Long::longValue).sum() / repeatCount;
+            recursiveTimeLabel.setText("Waktu Rekursif (rata-rata): " + averageTime + " ns");
+
+            updateDataset();
+
+            JOptionPane.showMessageDialog(this, "Pencarian Rekursif selesai sebanyak " + repeatCount + " kali!", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Masukkan rating valid!", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+}
 
     private void handleRefresh() {
         loadInitialData();
@@ -373,17 +245,26 @@ public class MainFrame extends JFrame {
             DefaultTableModel model = IterativeGameSearch.searchGamesByRating(0);
             if (model != null) {
                 table.setModel(model);
+                updateDataCount();
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Gagal memuat data awal: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    private void updateDataCount() {
+    // Ubah dari menggunakan table model ke menggunakan DatabaseHelper langsung
+    int rowCount = DatabaseHelper.getGameData().size();
+    dataCountLabel.setText("Jumlah Data: " + rowCount);
+}
+
     private void showChartInNewWindow() {
         if (chartFrame == null || !chartFrame.isVisible()) {
             chartFrame = new JFrame("Grafik Perbandingan Waktu Eksekusi");
             chartFrame.setSize(800, 600);
             chartFrame.setLocationRelativeTo(this);
+
+            updateDataset();
 
             JFreeChart chart = ChartFactory.createLineChart(
                 "Perbandingan Waktu Eksekusi",
@@ -411,11 +292,38 @@ public class MainFrame extends JFrame {
 
     private void updateDataset() {
         dataset.clear();
-        for (int i = 0; i < Math.max(iterativeHistory.size(), recursiveHistory.size()); i++) {
+
+        int dataPoints = Math.max(iterativeHistory.size(), recursiveHistory.size());
+        List<Long> smoothedIterative = smoothData(iterativeHistory);
+        List<Long> smoothedRecursive = smoothData(recursiveHistory);
+
+        for (int i = 0; i < dataPoints; i++) {
             String category = "Pencarian " + (i + 1);
-            if (i < iterativeHistory.size()) dataset.addValue(iterativeHistory.get(i), "Iteratif", category);
-            if (i < recursiveHistory.size()) dataset.addValue(recursiveHistory.get(i), "Rekursif", category);
+            if (i < smoothedIterative.size()) {
+                dataset.addValue(smoothedIterative.get(i), "Iteratif", category);
+            }
+            if (i < smoothedRecursive.size()) {
+                dataset.addValue(smoothedRecursive.get(i), "Rekursif", category);
+            }
         }
+    }
+
+    private List<Long> smoothData(List<Long> data) {
+        if (data.isEmpty()) return data;
+
+        List<Long> smoothed = new ArrayList<>();
+        for (int i = 0; i < data.size(); i++) {
+            long sum = 0;
+            int count = 0;
+
+            for (int j = Math.max(0, i - 2); j <= Math.min(data.size() - 1, i + 2); j++) {
+                sum += data.get(j);
+                count++;
+            }
+
+            smoothed.add(sum / count);
+        }
+        return smoothed;
     }
 
     private JButton createStyledButton(String text) {
@@ -426,11 +334,15 @@ public class MainFrame extends JFrame {
 
     private JLabel createStyledTimeLabel(String text) {
         JLabel label = new JLabel(text);
-        label.setFont(new Font("Arial", Font.BOLD, 18));
+        label.setFont(new Font("Arial", Font.BOLD, 16)); // Slightly reduced font size
         label.setOpaque(true);
         label.setBackground(Color.WHITE);
-        return label;
-    }
+        label.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(Color.LIGHT_GRAY),
+        BorderFactory.createEmptyBorder(5, 10, 5, 10)
+    ));
+    return label;
+}
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -439,4 +351,3 @@ public class MainFrame extends JFrame {
         });
     }
 }
->>>>>>> 6dae274 (sql)
