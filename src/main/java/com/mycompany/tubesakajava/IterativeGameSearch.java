@@ -24,14 +24,15 @@ public class IterativeGameSearch {
             model.addRow(new Object[]{game.name, game.rating, game.developer, game.year});
         }
     } else {
-        for (DatabaseHelper.GameData game : games) {
+        for (int i = 0; i < games.size(); i++) {
+            DatabaseHelper.GameData game = games.get(i);
             if (game.rating >= targetRating) {
                 model.addRow(new Object[]{game.name, game.rating, game.developer, game.year});
             }
         }
     }
     
-    executionTime = (System.nanoTime() - startTime); // Remove division by 1_000_000
+    executionTime = (System.nanoTime() - startTime);
     System.out.println("Iterative execution time: " + executionTime + " ns");
     return model;
 }
@@ -46,4 +47,4 @@ public class IterativeGameSearch {
     public static long getExecutionTime() {
         return executionTime;
     }
-} // Ini kurung kurawal yang hilang
+}
